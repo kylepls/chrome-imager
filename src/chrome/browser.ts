@@ -1,8 +1,8 @@
 import puppeteer, {Base64ScreenShotOptions, BoundingBox} from 'puppeteer';
 import fs from 'fs';
-import {getChrome} from '~/chrome-script'
-import {splitString} from '~/textutils'
-import {CommandResult, ImageResult} from "~chrome-imager";
+import {getChrome} from './chrome-script'
+import {splitString} from '../util/textutils'
+import {CommandResult, ImageResult} from "./chrome-imager";
 
 const normalViewport = {
     width: 3840,
@@ -17,20 +17,22 @@ export async function newImager() {
 
 export class Imager {
 
+    private chrome;
     private browser;
     private page;
 
     public async start() {
-        const chrome = await getChrome();
+        this.chrome = await getChrome();
         this.browser = await puppeteer.connect({
-            browserWSEndpoint: chrome.endpoint
+            browserWSEndpoint: this.chrome.endpoint
         });
         this.page = await this.browser.newPage();
         await this.page.setViewport(normalViewport);
     }
 
-    public close() {
-        this.browser.close();
+    public async close() {
+        await this.browser.close();
+        setTimeout(() => this.chrome.instance.kill(), 0);
     }
 
     public async goto(url: string, payload?: string, args?: any) {
@@ -60,10 +62,14 @@ export class Imager {
         for (const part of parts) {
             await this.page.evaluate((e, part) => e.innerHTML = e.innerHTML + part, textDiv, part);
             const base64String = await this.screenshotDOMElement(parentSelector);
-            results.push({b64: base64String, part});
+            results.push({b64: base64String, part: this.removeHtml(part)});
         }
 
-        return { images: results };
+        return {images: results};
+    }
+
+    private removeHtml(part: string): string {
+        return part.replace(/<[^>]*>/g, "");
     }
 
     private async getHtml(element) {
@@ -78,7 +84,8 @@ export class Imager {
             if (!element) {
                 return null;
             } else {
-                return element.getBoundingClientRect();
+                const {x, y, width, height} = element.parentElement.getBoundingClientRect();
+                return {x, y, width, height};
             }
         }, parentSelector);
 

@@ -1,9 +1,12 @@
+org: kylepls
+app: chrome-imager
 service: chrome-imager
 
 provider:
   name: aws
   runtime: nodejs8.10
   stage: dev
+  region: us-east-1 
 
 plugins:
   - serverless-plugin-typescript
@@ -16,9 +19,9 @@ package:
 
 functions:
   imager:
-    handler: src/handler.handler
-    memorySize: 576MB
-    timeout: 60
+    handler: src/handlers/chrome-handler.chromeHandler
+    memorySize: 1536MB
+    timeout: 300
     events:
       - http:
           path: /imager

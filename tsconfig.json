@@ -1,6 +1,6 @@
 {
   "compilerOptions": {
-    "baseUrl": ".",
+    "baseUrl": "src",
     "sourceMap": true,
     "target": "es6",
     "module": "commonjs",
@@ -17,12 +17,7 @@
     "strict": true,
     "declaration": true,
     "outDir": "target",
-    "plugins": [],
-    "paths": {
-      "~*": [
-        "*"
-      ]
-    }
+    "plugins": []
   },
   "include": [
     "./**/*.ts"
