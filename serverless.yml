@@ -1,0 +1,26 @@
+service: chrome-imager
+
+provider:
+  name: aws
+  runtime: nodejs8.10
+  stage: dev
+
+plugins:
+  - serverless-plugin-typescript
+  - serverless-offline
+  - serverless-plugin-chrome
+
+package:
+  exclude:
+    - node_modules/puppeteer/.local-chromium/**
+
+functions:
+  imager:
+    handler: src/handler.handler
+    memorySize: 576MB
+    timeout: 60
+    events:
+      - http:
+          path: /imager
+          method: POST
+          cors: true
