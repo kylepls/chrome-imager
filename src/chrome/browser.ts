@@ -1,6 +1,6 @@
-import puppeteer, {Base64ScreenShotOptions, BoundingBox} from 'puppeteer';
+import chromium from "chrome-aws-lambda";
+import puppeteer, {Base64ScreenShotOptions, BoundingBox} from 'puppeteer-core';
 import fs from 'fs';
-import {getChrome} from './chrome-script'
 import {splitString} from '../util/textutils'
 import {CommandResult, ImageResult} from "./chrome-imager";
 
@@ -17,22 +17,28 @@ export async function newImager() {
 
 export class Imager {
 
-    private chrome;
     private browser;
     private page;
 
     public async start() {
-        this.chrome = await getChrome();
-        this.browser = await puppeteer.connect({
-            browserWSEndpoint: this.chrome.endpoint
+        console.log("Path: " + (await chromium.executablePath));
+        this.browser = await puppeteer.launch({
+            args: chromium.args,
+            defaultViewport: chromium.defaultViewport,
+            executablePath: await chromium.executablePath,
+            headless: chromium.headless
         });
         this.page = await this.browser.newPage();
         await this.page.setViewport(normalViewport);
     }
 
     public async close() {
-        await this.browser.close();
-        setTimeout(() => this.chrome.instance.kill(), 0);
+        if (this.page) {
+            await this.page.close();
+        }
+        if (this.browser) {
+            await this.browser.disconnect();
+        }
     }
 
     public async goto(url: string, payload?: string, args?: any) {

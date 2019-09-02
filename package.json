@@ -9,30 +9,22 @@
     "build": "npm run clean && tsc",
     "deploy": "run-script-os",
     "deploy:windows": "echo Can only run this command on Linux",
-    "deploy:nix": "npm run build && sls deploy",
-    "test": "mocha -r ts-node/register src/**/*.spec.ts"
+    "deploy:nix": "npm run build && sls deploy"
   },
   "author": "kylepls",
   "license": "ISC",
   "dependencies": {
     "aws-lambda": "latest",
-    "chrome-launcher": "^0.10.5",
-    "puppeteer": "^1.11.0",
-    "serverless-plugin-chrome": "^1.0.0-55",
+    "chrome-aws-lambda": "^1.19.0",
+    "puppeteer-core": "^1.19.0",
     "serverless-plugin-typescript": "^1.1.9",
     "source-map-support": "^0.5.13",
-    "superagent": "^4.0.0",
     "ttypescript": "^1.5.6",
     "typescript": "^3.4.5"
   },
   "devDependencies": {
-    "@serverless-chrome/lambda": "^1.0.0-55",
     "@types/aws-lambda": "^8.10.31",
-    "@types/chai": "^4.2.0",
-    "@types/mocha": "^5.2.7",
     "@types/puppeteer": "^1.19.1",
-    "chai": "^4.2.0",
-    "mocha": "^6.2.0",
     "run-script-os": "^1.0.7",
     "serverless-offline": "^3.31.3",
     "ts-node": "^8.3.0",
