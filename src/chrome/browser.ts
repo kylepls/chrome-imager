@@ -15,29 +15,57 @@ export async function newImager() {
     return imager;
 }
 
+let executions = 0;
+let path;
+let browser;
+
+async function getPath() {
+    if (!path) {
+        path = await chromium.executablePath;
+    }
+    return path;
+}
+
+async function getBrowser() {
+    console.log("Path: " + await getPath());
+    if (!browser) {
+        browser = await puppeteer.launch({
+            args: chromium.args,
+            defaultViewport: chromium.defaultViewport,
+            executablePath: await getPath(),
+            headless: chromium.headless
+        });
+    }
+    return browser;
+}
+
+async function closeBrowser() {
+    if (browser) {
+        console.log("Killing chrome");
+        browser.close();
+        browser = null;
+    }
+}
+
 export class Imager {
 
     private browser;
     private page;
 
     public async start() {
-        console.log("Path: " + (await chromium.executablePath));
-        this.browser = await puppeteer.launch({
-            args: chromium.args,
-            defaultViewport: chromium.defaultViewport,
-            executablePath: await chromium.executablePath,
-            headless: chromium.headless
-        });
+        this.browser = await getBrowser();
         this.page = await this.browser.newPage();
         await this.page.setViewport(normalViewport);
     }
 
     public async close() {
+        executions += 1;
         if (this.page) {
             await this.page.close();
         }
-        if (this.browser) {
-            await this.browser.disconnect();
+        console.log(`Executions: ${executions}`);
+        if (executions > 7) {
+            await closeBrowser();
         }
     }
 
@@ -62,6 +90,7 @@ export class Imager {
 
         const htmlString: string = await this.getHtml(textDiv);
         const parts: string[] = splitString(htmlString);
+        console.log("Parts: " + JSON.stringify(parts));
         await this.page.evaluate(e => e.innerHTML = "", textDiv);
 
         const results = [] as ImageResult[];

@@ -11,11 +11,6 @@ provider:
 plugins:
   - serverless-plugin-typescript
   - serverless-offline
-#  - serverless-plugin-chrome
-
-#package:
-#  exclude:
-#    - node_modules/puppeteer/.local-chromium/**
 
 functions:
   imager:
