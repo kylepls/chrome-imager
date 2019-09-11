@@ -37,6 +37,9 @@ export async function run(commands: ImageCommand[]): Promise<CommandResult[]> {
         }
     }
 
+    console.log("Closing imager...");
     await imager.close();
+    
+    console.log("Done");
     return output;
 }

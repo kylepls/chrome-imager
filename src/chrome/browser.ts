@@ -72,7 +72,7 @@ export class Imager {
 
     public async goto(url: string, payload?: string, args?: any) {
         console.log(`Goto url ${url}`);
-        await this.page.goto(url, {waitUntil: 'networkidle2', ...args});
+        await this.page.goto(url, {...args});
         if (payload) {
             console.log("Eval payload...");
             await this.page.evaluate(payload);
@@ -96,11 +96,15 @@ export class Imager {
 
         const results = [] as ImageResult[];
         for (const part of parts) {
+            console.log(`Setting text content to ${part}`)
             await this.page.evaluate((e, part) => e.innerHTML = e.innerHTML + part, textDiv, part);
+            console.log(`Taking screenshot of ${part}`);
             const base64String = await this.screenshotDOMElement(parentSelector);
+            console.log("Took screenshot to b64 string");
             results.push({b64: base64String, part: this.removeHtml(part)});
         }
 
+        console.log(`Got ${results.length} images`);
         return {images: results};
     }
 
