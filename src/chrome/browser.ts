@@ -5,8 +5,9 @@ import {splitString} from '../util/textutils'
 import {CommandResult, ImageResult} from "./chrome-imager";
 
 const normalViewport = {
-    width: 3840,
-    height: 2160
+    width: 1920,
+    height: 1080,
+    deviceScaleFactor: 2
 };
 
 export async function newImager() {
